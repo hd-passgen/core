@@ -1,0 +1,5 @@
+.vscode
+.DS_Store
+
+# for executable files
+*.bin
