@@ -52,3 +52,8 @@ export TPM2TOOLS_TCTI="swtpm:path=/tmp/tpmstate/swtpm-sock"
 tpm2_getrandom 10
 tpm2_pcrread
 ```
+
+### Browser extensions for communicating with host-OS processes
+
+- [https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging]
+- [https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging]
