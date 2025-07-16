@@ -19,6 +19,8 @@
 
 ### Alternatives
 
+TODO: сделать анализ функционала, выделить плюсы и минусы каждого решения
+
 - [lesspass](https://github.com/lesspass/lesspass)
 - [pass](https://www.passwordstore.org/)
 
