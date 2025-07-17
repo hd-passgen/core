@@ -1,0 +1,31 @@
+name: test-go
+on:
+  push:
+  pull_request:
+permissions: read-all
+jobs:
+  test:
+    name: test-go
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        go: ["1.24"]
+        include:
+          - os: ubuntu-latest
+            arch: "386"
+          - os: ubuntu-latest
+            arch: amd64
+          - os: ubuntu-latest
+            arch: arm64
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup-go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go }}
+      - name: test
+        run: |
+          go test -cover ./...
+          go test -tags safe -cover ./...

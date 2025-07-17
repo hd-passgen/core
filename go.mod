@@ -5,7 +5,11 @@ go 1.24.5
 require (
 	github.com/facebookincubator/sks v0.0.0-20250508161834-9be892919529
 	github.com/google/go-tpm v0.9.5
+	github.com/samber/lo v1.51.0
 	github.com/spf13/pflag v1.0.6
+	github.com/stretchr/testify v1.10.0
+	github.com/tyler-smith/go-bip32 v1.0.0
+	github.com/tyler-smith/go-bip39 v1.1.0
 )
 
 require (
@@ -26,10 +30,6 @@ require (
 	github.com/jgoguen/go-utils v0.0.0-20200211015258-b42ad41486fd // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/samber/lo v1.51.0 // indirect
-	github.com/stretchr/testify v1.10.0 // indirect
-	github.com/tyler-smith/go-bip32 v1.0.0 // indirect
-	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.27.0 // indirect

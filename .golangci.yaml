@@ -1,0 +1,65 @@
+version: "2"
+linters:
+  enable:
+    - asciicheck
+    - decorder
+    - dogsled
+    - dupl
+    - errchkjson
+    - errorlint
+    - forcetypeassert
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gosec
+    - makezero
+    - nestif
+    - nilnil
+    - prealloc
+    - unconvert
+    - usestdlibvars
+  disable:
+    - funlen
+    - unused
+  settings:
+    govet:
+      enable:
+        - assign
+        - atomic
+        - bools
+        - composites
+        - copylocks
+        - httpresponse
+        - loopclosure
+        - lostcancel
+        - nilfunc
+        - printf
+        - stdmethods
+        - tests
+        - unmarshal
+        - unreachable
+        - unusedresult
+    nestif:
+      min-complexity: 6
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - research
+      - test
+      - testutils
+      - examples
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
