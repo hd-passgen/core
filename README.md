@@ -26,6 +26,8 @@ TODO: сделать анализ функционала, выделить пл�
 
 ### TPM
 
+My machine (TP X13 gen 1 with AMD Ryzen 7 4750u) has only TPM 2.0 devices located on `/dev/tpm0` and `/dev/tpmrm0` (linux)
+
 Software emulated TPM storage
 
 ```sh
@@ -55,11 +57,12 @@ tpm2_getrandom 10
 tpm2_pcrread
 ```
 
+To use Secure Enclave on Mac, your app must have a registered App ID (`com.apple.application-identifier` entitlement). For more information, see [this thread](https://developer.apple.com/forums/thread/728150).
+
 ### Browser extensions for communicating with host-OS processes
 
 - [https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging]
 - [https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging]
-
 
 ### Password generator
 

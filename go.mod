@@ -2,8 +2,12 @@ module github.com/hd-passgen/core
 
 go 1.24.5
 
+replace github.com/facebookincubator/sks => /home/open/src/sks
+
 require (
+	github.com/facebookincubator/flog v0.0.0-20190930132826-d2511d0ce33c
 	github.com/facebookincubator/sks v0.0.0-20250508161834-9be892919529
+	github.com/foxboron/go-tpm-keyfiles v0.0.0-20250520203025-c3c3a4ec1653
 	github.com/google/go-tpm v0.9.5
 	github.com/samber/lo v1.51.0
 	github.com/spf13/pflag v1.0.6
@@ -17,13 +21,13 @@ require (
 	github.com/FactomProject/btcutilecc v0.0.0-20130527213604-d3a63a5752ec // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/facebookincubator/flog v0.0.0-20190930132826-d2511d0ce33c // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/certificate-transparency-go v1.3.2 // indirect
 	github.com/google/certtostore v1.0.4 // indirect
 	github.com/google/deck v1.1.0 // indirect
 	github.com/google/go-attestation v0.5.1 // indirect
+	github.com/google/go-tpm-tools v0.4.4 // indirect
 	github.com/google/go-tspi v0.3.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
