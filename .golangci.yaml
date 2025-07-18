@@ -8,7 +8,6 @@ linters:
     - errchkjson
     - errorlint
     - forcetypeassert
-    - gochecknoinits
     - goconst
     - gocritic
     - gosec
