@@ -11,3 +11,6 @@ build:
 install: build
 	install $(BINARY_NAME) ${GOBIN}/$(BINARY_NAME)
 	rm -f $(BINARY_NAME)
+	
+lint:
+	golangci-lint run
