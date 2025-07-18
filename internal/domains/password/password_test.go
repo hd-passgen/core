@@ -1,14 +1,13 @@
-package password_test
+package password
 
 import (
 	"testing"
 
-	"github.com/hd-passgen/core/internal/domains/password"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
-func TestService_Generate(t *testing.T) {
+func Test_Generate(t *testing.T) {
 	t.Parallel()
 
 	testTable := []struct {
@@ -41,11 +40,9 @@ func TestService_Generate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			s := password.NewService()
-
 			results := make([]string, 0, len(tt.serviceNames))
 			for _, serviceName := range tt.serviceNames {
-				result, err := s.Generate(tt.password, serviceName)
+				result, err := Generate(tt.password, serviceName, 0)
 				require.NoError(t, err)
 
 				results = append(results, result)
@@ -56,6 +53,59 @@ func TestService_Generate(t *testing.T) {
 			} else {
 				require.Len(t, lo.Uniq(results), 1)
 			}
+		})
+	}
+}
+
+func Test_GenerateWithLenght(t *testing.T) {
+	t.Parallel()
+
+	testTable := []struct {
+		name        string
+		master      string
+		lenght      uint8
+		expErr      error
+		serviceName string
+	}{
+		{
+			name:        "short password",
+			master:      "qwerty",
+			serviceName: "github.com",
+			lenght:      2,
+			expErr:      ErrInvalidLength,
+		},
+		{
+			name:        "default password",
+			master:      "qwerty",
+			serviceName: "github.com",
+			lenght:      32,
+		},
+		{
+			name:        "max available password",
+			master:      "qwerty",
+			serviceName: "github.com",
+			lenght:      40,
+		},
+		{
+			name:        "too long password",
+			master:      "qwerty",
+			serviceName: "github.com",
+			lenght:      41,
+			expErr:      ErrInvalidLength,
+		},
+	}
+
+	for _, tt := range testTable {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			result, err := Generate(tt.master, tt.serviceName, tt.lenght)
+			if err != nil {
+				require.ErrorIs(t, err, tt.expErr)
+			} else {
+				require.Len(t, result, int(tt.lenght))
+			}
+
 		})
 	}
 }

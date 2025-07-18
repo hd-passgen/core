@@ -8,18 +8,30 @@ import (
 	"fmt"
 
 	"github.com/hd-passgen/core/internal/constants"
+	"github.com/samber/lo"
 	"github.com/tyler-smith/go-bip32"
 	"github.com/tyler-smith/go-bip39"
 )
 
-type Service struct {
-}
+var (
+	ErrInvalidLength = fmt.Errorf("invalid length")
+)
 
-func NewService() *Service {
-	return &Service{}
-}
+const (
+	defaultLength = 32
+	minLength     = 8
+	maxLength     = 40
+)
 
-func (s *Service) Generate(masterPassword, serviceName string) (result string, err error) {
+func Generate(masterPassword, serviceName string, length uint8) (result string, err error) {
+	if lo.IsEmpty(length) {
+		length = defaultLength
+	}
+
+	if length < minLength || length > maxLength {
+		return "", fmt.Errorf("Generate: %w", ErrInvalidLength)
+	}
+
 	seed := bip39.NewSeed(constants.DefaultMnemonic, masterPassword)
 
 	masterKey, err := bip32.NewMasterKey(seed)
@@ -29,7 +41,7 @@ func (s *Service) Generate(masterPassword, serviceName string) (result string, e
 
 	hash := sha256.Sum256([]byte(serviceName))
 
-	// TODO: collision risk
+	// TODO: fix collision risk
 	index := binary.BigEndian.Uint32(hash[:4])
 
 	key, err := masterKey.NewChildKey(index)
@@ -39,7 +51,8 @@ func (s *Service) Generate(masterPassword, serviceName string) (result string, e
 
 	h := hmac.New(sha256.New, key.Key)
 	h.Write([]byte(serviceName))
-	result = base64.RawURLEncoding.EncodeToString(h.Sum(nil))[:32]
+	raw := h.Sum(nil)
 
-	return result, nil
+	encoded := base64.RawURLEncoding.EncodeToString(raw)
+	return encoded[:length], nil
 }

@@ -59,15 +59,3 @@ tpm2_pcrread
 
 - [https://developer.chrome.com/docs/extensions/develop/concepts/native-messaging]
 - [https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_messaging]
-
-
-### Password generator
-
-Для генерации пароля необходимо иметь:
-  - master пароль; 
-  - mnemonic words [BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki) (последовательность слов, разделённых пробелами - пока непонятно откуда их брать).
-
-TODO: 
-- [ ] Придумать, как сделать генерацию child пароля максимально устойчивой к коллизиям
-- [ ] Мастер пароль нужно сохранять заранее, чтобы его не приходилось вводить
-- [ ] Как поступаем с mnemonic words
