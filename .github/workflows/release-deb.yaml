@@ -30,9 +30,11 @@ jobs:
           export PATH=$PATH:$(go env GOPATH)/bin
           nfpm pkg --config nfpm.yaml -p deb
 
+      - name: Install Cloudsmith CLI
+        run: pip install --upgrade cloudsmith-cli
+
       - name: Push Debian package to Cloudsmith
         run: |
-          curl -s https://dl.cloudsmith.io/public/cloudsmith/cli/setup.sh | bash
           cloudsmith push deb tatun/hd-passgen/debian/bullseye hd-passgen_0.1.0_amd64.deb \
             --api-key $CLOUDSMITH_API_KEY \
             --component main
