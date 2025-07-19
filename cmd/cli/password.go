@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/hd-passgen/core/internal/domains/password"
-	"github.com/samber/lo"
+	"github.com/hd-passgen/core/internal/objects"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -16,6 +16,7 @@ const (
 	flagMasterPasswordFile = "master-file"
 	flagServiceName        = "service"
 	flagPasswordLength     = "length"
+	flagVersion            = "version"
 )
 
 var passwordGenerateCommand = &cobra.Command{
@@ -23,32 +24,19 @@ var passwordGenerateCommand = &cobra.Command{
 	Short: "Generate password.",
 	Long:  "Generate password.",
 	RunE: func(_ *cobra.Command, _ []string) (err error) {
-		input := struct {
-			ServiceName        string `validate:"required"`
-			MasterPassword     string `validate:"required_without=MasterPasswordFile"`
-			MasterPasswordFile string `validate:"required_without=MasterPassword,omitempty,file"`
-			Length             uint8  `validate:"omitempty,max=40"`
-		}{
+		input := objects.PasswordParams{
 			ServiceName:        viper.GetString(flagServiceName),
 			MasterPassword:     viper.GetString(flagMasterPassword),
 			MasterPasswordFile: viper.GetString(flagMasterPasswordFile),
 			Length:             viper.GetUint8(flagPasswordLength),
+			Version:            viper.GetInt(flagVersion),
 		}
 
 		if err := Validator.Struct(input); err != nil {
 			return fmt.Errorf("RunE: %w", err)
 		}
 
-		if lo.IsNotEmpty(input.MasterPasswordFile) {
-			content, err := os.ReadFile(input.MasterPasswordFile)
-			if err != nil {
-				return fmt.Errorf("RunE: %w", err)
-			}
-
-			input.MasterPassword = string(content)
-		}
-
-		pass, err := password.Generate(input.MasterPassword, input.ServiceName, input.Length)
+		pass, err := password.Generate(input)
 		if err != nil {
 			return fmt.Errorf("RunE: %w", err)
 		}
@@ -79,6 +67,11 @@ func addPasswordCommands() (err error) {
 
 	passwordGenerateCommand.PersistentFlags().Uint8P(flagPasswordLength, "l", 0, "Length of password (default 32)")
 	if err = viper.BindPFlag(flagPasswordLength, passwordGenerateCommand.PersistentFlags().Lookup(flagPasswordLength)); err != nil {
+		return fmt.Errorf("addPasswordCommands: %w", err)
+	}
+
+	passwordGenerateCommand.PersistentFlags().StringP(flagVersion, "v", "", "Version of password")
+	if err = viper.BindPFlag(flagVersion, passwordGenerateCommand.PersistentFlags().Lookup(flagVersion)); err != nil {
 		return fmt.Errorf("addPasswordCommands: %w", err)
 	}
 

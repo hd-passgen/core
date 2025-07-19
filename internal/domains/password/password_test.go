@@ -3,6 +3,7 @@ package password
 import (
 	"testing"
 
+	"github.com/hd-passgen/core/internal/objects"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
@@ -42,7 +43,10 @@ func Test_Generate(t *testing.T) {
 
 			results := make([]string, 0, len(tt.serviceNames))
 			for _, serviceName := range tt.serviceNames {
-				result, err := Generate(tt.password, serviceName, 0)
+				result, err := Generate(objects.PasswordParams{
+					ServiceName:    serviceName,
+					MasterPassword: tt.password,
+				})
 				require.NoError(t, err)
 
 				results = append(results, result)
@@ -99,7 +103,11 @@ func Test_GenerateWithLenght(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			result, err := Generate(tt.master, tt.serviceName, tt.lenght)
+			result, err := Generate(objects.PasswordParams{
+				ServiceName:    tt.serviceName,
+				MasterPassword: tt.master,
+				Length:         tt.lenght,
+			})
 			if err != nil {
 				require.ErrorIs(t, err, tt.expErr)
 			} else {
