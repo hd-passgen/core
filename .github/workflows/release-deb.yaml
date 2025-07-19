@@ -28,7 +28,8 @@ jobs:
 
       - name: Package .deb with nfpm
         run: |
-          run: ~/go/bin/nfpm pkg --config nfpm.yaml
+          export PATH=$PATH:$(go env GOPATH)/bin
+          nfpm pkg --config nfpm.yaml
 
       - name: Push Debian package to Cloudsmith
         uses: cloudsmith-io/action@v0.6.14
