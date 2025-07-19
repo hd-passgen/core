@@ -1,0 +1,40 @@
+name: Release to Cloudsmith
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: Build hd-passgen
+        run: go build -o hd-passgen ./cmd/cli
+
+      - name: Package .deb with nfpm
+        run: |
+          curl -sSfL https://install.goreleaser.com/github.com/goreleaser/nfpm.sh | sh
+          nfpm pkg --config nfpm.yaml
+
+      - name: Push Debian package to Cloudsmith
+        uses: cloudsmith-io/action@v0.6.14
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          owner: tatun
+          repo: hd-passgen
+          format: deb
+          distro: any-distro
+          distro-version: any-version
+          component: main
+          file: hd-passgen_0.1.0_amd64.deb
