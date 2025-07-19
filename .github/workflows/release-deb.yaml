@@ -1,4 +1,4 @@
-name: Release to Cloudsmith
+name: release-deb
 
 on:
   push:
@@ -22,10 +22,12 @@ jobs:
       - name: Build hd-passgen
         run: go build -o hd-passgen ./cmd/cli
 
+      - name: Install nfpm
+        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+
       - name: Package .deb with nfpm
         run: |
-          curl -sSfL https://install.goreleaser.com/github.com/goreleaser/nfpm.sh | sh
-          nfpm pkg --config nfpm.yaml
+          run: ~/go/bin/nfpm pkg --config nfpm.yaml
 
       - name: Push Debian package to Cloudsmith
         uses: cloudsmith-io/action@v0.6.14
