@@ -1,7 +1,7 @@
 name: hd-passgen
 arch: amd64
 platform: linux
-version: 0.1.0
+version: 0.1.1
 section: "default"
 priority: optional
 maintainer: Dmitrii Borisenko <you@example.com>
@@ -11,4 +11,4 @@ license: MIT
 
 contents:
 - src: ./hd-passgen
-  dst: /usr/local/bin/hd-passgen
+  dst: /usr/bin/hd-passgen
