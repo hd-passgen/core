@@ -1,7 +1,7 @@
 name: hd-passgen
 arch: amd64
 platform: linux
-version: "{{ .Version }}"
+version: ${VERSION}
 section: default
 priority: optional
 maintainer: Dmitrii Borisenko <borisenkodmitrii@​yahoo.com>

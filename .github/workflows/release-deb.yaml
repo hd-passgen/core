@@ -29,8 +29,6 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
       - name: Package .deb with nfpm
-        env:
-          VERSION: ${{ env.VERSION }}
         run: |
           export PATH=$PATH:$(go env GOPATH)/bin
           nfpm pkg --config nfpm.yaml -p deb
