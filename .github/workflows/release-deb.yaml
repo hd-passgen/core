@@ -2,8 +2,8 @@ name: release-deb
 
 on:
   push:
-    branches:
-      - apt
+    tags:
+      - "v*.*.*"
 
 jobs:
   build-and-push:
@@ -23,16 +23,19 @@ jobs:
         run: go build -o hd-passgen ./cmd/cli
 
       - name: Install nfpm
-        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
+        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.43.0
+
+      - name: Extract version from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
       - name: Package .deb with nfpm
         run: |
           export PATH=$PATH:$(go env GOPATH)/bin
-          nfpm pkg --config nfpm.yaml -p deb
+          nfpm pkg --config nfpm.yaml -p deb --version "$VERSION"
 
       - name: Install Cloudsmith CLI
         run: pip install --upgrade cloudsmith-cli
 
       - name: Push Debian package to Cloudsmith
         run: |
-          cloudsmith push deb tatun/hd-passgen/any-distro/any-version hd-passgen_0.1.4_amd64.deb -k $CLOUDSMITH_API_KEY
+          cloudsmith push deb tatun/hd-passgen/any-distro/any-version hd-passgen_${VERSION}_amd64.deb -k $CLOUDSMITH_API_KEY
