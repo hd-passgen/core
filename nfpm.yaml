@@ -1,0 +1,14 @@
+name: hd-passgen
+arch: amd64
+platform: linux
+version: ${VERSION}
+section: default
+priority: optional
+maintainer: Dmitrii Borisenko <borisenkodmitrii@​yahoo.com>
+description: CLI tool to generate deterministic passwords
+homepage: https://github.com/hd-passgen/core
+license: MIT
+
+contents:
+- src: ./hd-passgen
+  dst: /usr/bin/hd-passgen

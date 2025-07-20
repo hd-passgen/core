@@ -7,6 +7,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/hd-passgen/core/internal/constants"
 	"github.com/hd-passgen/core/internal/objects"
@@ -74,7 +75,7 @@ func generateV1(params objects.PasswordParams) (result string, err error) {
 			return "", fmt.Errorf("Generate: failed to read master password file: %w", err)
 		}
 
-		params.MasterPassword = string(content)
+		params.MasterPassword = strings.TrimSpace(string(content))
 	}
 
 	seed := bip39.NewSeed(constants.DefaultMnemonic, params.MasterPassword)

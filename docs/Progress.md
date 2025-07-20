@@ -19,4 +19,4 @@ TODO:
 ## Distribution
 
 - [x] cli тулза для простой генерации пароля (make install)
-- [ ] apt
+- [x] apt
