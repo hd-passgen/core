@@ -35,4 +35,4 @@ jobs:
 
       - name: Push Debian package to Cloudsmith
         run: |
-          cloudsmith push deb tatun/hd-passgen/debian/bullseye hd-passgen_0.1.0_amd64.deb -k $CLOUDSMITH_API_KEY
+          cloudsmith push deb tatun/hd-passgen/debian/any-version hd-passgen_0.1.0_amd64.deb -k $CLOUDSMITH_API_KEY
