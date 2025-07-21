@@ -28,12 +28,25 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// defer func() { _ = rwc.Close() }()
+	defer rwc.Close()
 
 	fmt.Println("opened")
 
+	// srkTemplate := tpm2.Public{
+	// 	Type:    tpm2.AlgRSA,
+	// 	NameAlg: tpm2.AlgSHA256,
+	// 	Attributes: tpm2.FlagDecrypt | tpm2.FlagSign |
+	// 		tpm2.FlagFixedTPM | tpm2.FlagFixedParent |
+	// 		tpm2.FlagSensitiveDataOrigin | tpm2.FlagUserWithAuth,
+	// 	RSAParameters: &tpm2.RSAParams{
+	// 		Sign: &tpm2.SigScheme{
+	// 			Alg: tpm2.AlgAES,
+	// 		},
+	// 	},
+	// }
+
 	// readRandom(rwc)
-	secureStorage(rwc)
+	// secureStorage(rwc)
 }
 
 func readRandom(rwc io.ReadWriteCloser) {

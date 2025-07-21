@@ -9,6 +9,7 @@ require (
 	github.com/facebookincubator/sks v0.0.0-20250508161834-9be892919529
 	github.com/foxboron/go-tpm-keyfiles v0.0.0-20250520203025-c3c3a4ec1653
 	github.com/google/go-tpm v0.9.5
+	github.com/google/go-tpm-tools v0.4.5
 	github.com/samber/lo v1.51.0
 	github.com/spf13/pflag v1.0.6
 	github.com/stretchr/testify v1.10.0
@@ -27,15 +28,21 @@ require (
 	github.com/google/certtostore v1.0.4 // indirect
 	github.com/google/deck v1.1.0 // indirect
 	github.com/google/go-attestation v0.5.1 // indirect
-	github.com/google/go-tpm-tools v0.4.4 // indirect
+	github.com/google/go-configfs-tsm v0.3.3-0.20240919001351-b4b5b84fdcbc // indirect
+	github.com/google/go-sev-guest v0.12.1 // indirect
+	github.com/google/go-tdx-guest v0.3.2-0.20241009005452-097ee70d0843 // indirect
 	github.com/google/go-tspi v0.3.0 // indirect
+	github.com/google/logger v1.1.1 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jgoguen/go-utils v0.0.0-20200211015258-b42ad41486fd // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
+	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

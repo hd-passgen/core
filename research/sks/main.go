@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 
@@ -22,14 +23,7 @@ func main() {
 		fmt.Println(usage)
 	}
 
-	flogCfg := &flog.Config{
-		Verbosity:     "10",
-		Vmodule:       "",
-		TraceLocation: "",
-	}
-	if err := flogCfg.Set(); err != nil {
-		log.Fatal("failed to set flog config:", err.Error())
-	}
+	flog.SetOutput(io.Discard)
 
 	if len(os.Args) < 2 {
 		fmt.Println(usage)
@@ -97,10 +91,14 @@ func getVendor() {
 }
 
 func storeKey() {
-	_, err := sks.NewKey(keyLabel, keyTag, true, true, keyHash)
+	key, err := sks.NewKey(keyLabel, keyTag, true, true, keyHash)
 	if err != nil {
 		log.Fatal("failed to create key:", err)
 	}
+	if err := key.Close(); err != nil {
+		log.Fatal("Failed to close key:", err.Error())
+	}
+	// fmt.Println("public:", key.Public())
 }
 
 func getKey() {
@@ -108,7 +106,22 @@ func getKey() {
 	if err != nil {
 		log.Fatal("failed to load key:", err.Error())
 	}
-	fmt.Println(key.Label(), key.Tag())
+
+	fmt.Println(
+		"label:", key.Label(),
+		"tag:", key.Tag(),
+		"hash:", key.Hash(),
+	)
+
+	b1, b2, err := key.EncryptedBlob()
+	if err != nil {
+		log.Fatal("Failed to get encrypted blob:", err.Error())
+	}
+	fmt.Println("b1:", b1, "b2:", b2)
+
+	// if err := key.Attest(); err != nil {
+	// 	log.Fatal("Failed to attest key:", err.Error())
+	// }
 }
 
 func removeKey() {

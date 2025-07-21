@@ -75,6 +75,10 @@ func sealedData(tpm transport.TPMCloser) {
 	}
 }
 
+func getRandomData() {
+
+}
+
 // func createAndStoreKey(rwc io.ReadWriteCloser) (tpmutil.Handle, []byte, error) {
 // }
 
