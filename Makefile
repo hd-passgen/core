@@ -6,7 +6,7 @@ GOBIN := $(shell go env GOPATH)/bin
 endif
 
 build:
-	go build -o $(BINARY_NAME) ./cmd/cli
+	go build -o $(BINARY_NAME) .
 
 install: build
 	install $(BINARY_NAME) ${GOBIN}/$(BINARY_NAME)

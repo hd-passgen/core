@@ -17,10 +17,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.24'
+          go-version: "1.24"
 
       - name: Build hd-passgen
-        run: CGO_ENABLED=0 go build -o hd-passgen ./cmd/cli
+        run: CGO_ENABLED=0 go build -o hd-passgen .
 
       - name: Install nfpm
         run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.43.0
