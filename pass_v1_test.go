@@ -44,6 +44,7 @@ func TestGenerate(t *testing.T) {
 				result, err := generatePassword(parameters{
 					ServiceName:    serviceName,
 					MasterPassword: tt.password,
+					Length:         defaultPasswordLength,
 				})
 				require.NoError(t, err)
 

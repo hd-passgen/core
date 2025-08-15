@@ -75,25 +75,25 @@ func main() {
 		os.Exit(1)
 	}
 
-	passGenCmd.PersistentFlags().StringP("master-password", "s", "", "master password")
+	passGenCmd.PersistentFlags().StringP("master-password", "p", "", "master password")
 	if err := viper.BindPFlag("master-password", passGenCmd.PersistentFlags().Lookup("master-password")); err != nil {
 		fmt.Println("Failed to add flag: ", err.Error())
 		os.Exit(1)
 	}
 
-	passGenCmd.PersistentFlags().StringP("master-password-file", "s", "", "master password file")
+	passGenCmd.PersistentFlags().StringP("master-password-file", "f", "", "master password file")
 	if err := viper.BindPFlag("master-password-file", passGenCmd.PersistentFlags().Lookup("master-password-file")); err != nil {
 		fmt.Println("Failed to add flag: ", err.Error())
 		os.Exit(1)
 	}
 
-	passGenCmd.PersistentFlags().StringP("length", "s", "", "password length (default 32)")
+	passGenCmd.PersistentFlags().Uint8P("length", "l", defaultPasswordLength, "password length (default 32)")
 	if err := viper.BindPFlag("length", passGenCmd.PersistentFlags().Lookup("length")); err != nil {
 		fmt.Println("Failed to add flag: ", err.Error())
 		os.Exit(1)
 	}
 
-	passGenCmd.PersistentFlags().StringP("version", "s", "", "password version")
+	passGenCmd.PersistentFlags().IntP("version", "v", currentPasswordVersion, "password version")
 	if err := viper.BindPFlag("version", passGenCmd.PersistentFlags().Lookup("version")); err != nil {
 		fmt.Println("Failed to add flag: ", err.Error())
 		os.Exit(1)
@@ -111,10 +111,6 @@ const (
 )
 
 func generatePassword(params parameters) (string, error) {
-	if params.Length == 0 {
-		params.Length = defaultPasswordLength
-	}
-
 	if params.Version == 0 {
 		params.Version = currentPasswordVersion
 	}
