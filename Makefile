@@ -6,11 +6,11 @@ GOBIN := $(shell go env GOPATH)/bin
 endif
 
 build:
-	go build -o $(BINARY_NAME) .
+	CGO_ENABLED=0 go build -o $(BINARY_NAME) .
 
 install: build
 	install $(BINARY_NAME) ${GOBIN}/$(BINARY_NAME)
 	rm -f $(BINARY_NAME)
 	
 lint:
-	golangci-lint run
+	golangci-lint run ./...

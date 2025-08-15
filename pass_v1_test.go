@@ -73,5 +73,4 @@ func unique(collection []string) []string {
 	}
 
 	return result
-
 }
