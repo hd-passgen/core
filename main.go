@@ -32,9 +32,10 @@ var (
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "hd-passgen",
-		Short: "HD password generator",
-		Long:  "HD password generator",
+		Use:     "hd-passgen",
+		Short:   "HD password generator",
+		Long:    "HD password generator",
+		Version: Version,
 	}
 
 	passGenCmd = &cobra.Command{
