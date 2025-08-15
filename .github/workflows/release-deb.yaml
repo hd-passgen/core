@@ -1,0 +1,41 @@
+name: release-deb
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.24"
+
+      - name: Build hd-passgen
+        run: CGO_ENABLED=0 go build -o hd-passgen .
+
+      - name: Install nfpm
+        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.43.0
+
+      - name: Extract version from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Package .deb with nfpm
+        run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
+          nfpm pkg --config nfpm.yaml -p deb
+
+      - name: Install Cloudsmith CLI
+        run: pip install --upgrade cloudsmith-cli
+
+      - name: Push Debian package to Cloudsmith
+        run: |
+          cloudsmith push deb tatun/hd-passgen/any-distro/any-version hd-passgen_${VERSION}_amd64.deb -k $CLOUDSMITH_API_KEY

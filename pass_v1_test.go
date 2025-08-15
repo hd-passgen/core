@@ -1,14 +1,12 @@
-package password_test
+package main
 
 import (
 	"testing"
 
-	"github.com/hd-passgen/core/internal/domains/password"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
-func TestService_Generate(t *testing.T) {
+func TestGenerate(t *testing.T) {
 	t.Parallel()
 
 	testTable := []struct {
@@ -41,21 +39,39 @@ func TestService_Generate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			s := password.NewService()
-
 			results := make([]string, 0, len(tt.serviceNames))
 			for _, serviceName := range tt.serviceNames {
-				result, err := s.Generate(tt.password, serviceName)
+				result, err := generatePassword(parameters{
+					ServiceName:    serviceName,
+					MasterPassword: tt.password,
+					Length:         defaultPasswordLength,
+				})
 				require.NoError(t, err)
 
 				results = append(results, result)
 			}
 
 			if tt.uniqueResults {
-				require.Len(t, lo.Uniq(results), len(results))
+				require.Len(t, unique(results), len(results))
 			} else {
-				require.Len(t, lo.Uniq(results), 1)
+				require.Len(t, unique(results), 1)
 			}
 		})
 	}
+}
+
+func unique(collection []string) []string {
+	result := make([]string, 0, len(collection))
+	seen := make(map[string]struct{}, len(collection))
+
+	for i := range collection {
+		if _, ok := seen[collection[i]]; ok {
+			continue
+		}
+
+		seen[collection[i]] = struct{}{}
+		result = append(result, collection[i])
+	}
+
+	return result
 }
