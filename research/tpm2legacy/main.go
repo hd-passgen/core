@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/google/go-tpm/legacy/tpm2"
@@ -125,6 +126,8 @@ func generateRSA() {
 	// fmt.Printf("Key made persistent at handle: 0x%x\n", persistentHandle)
 }
 
+// func
+
 func all() {
 	// Open TPM
 	tpm, err := tpm2.OpenTPM("/dev/tpm0")
@@ -192,4 +195,23 @@ func all() {
 	}
 
 	fmt.Printf("Signature: %x\n", sig.RSA.Signature)
+}
+
+func savePassword(rwc io.ReadWriteCloser, password []byte) {
+	tpmPublic := tpm2.Public{
+		Type:       tpm2.AlgRSA,
+		NameAlg:    tpm2.AlgSHA256,
+		Attributes: tpm2.FlagFixedTPM | tpm2.FlagFixedParent | tpm2.FlagSensitiveDataOrigin | tpm2.FlagUserWithAuth | tpm2.FlagRestricted | tpm2.FlagDecrypt,
+		RSAParameters: &tpm2.RSAParams{
+			KeyBits: 2048,
+		},
+	}
+
+	primaryHandle, _, err := tpm2.CreatePrimary(rwc, tpm2.HandleOwner, tpm2.PCRSelection{}, "", "", tpmPublic)
+	if err != nil {
+		log.Fatal("Failed to create primary:", err)
+	}
+	defer tpm2.FlushContext(rwc, primaryHandle)
+
+	// sealedBlob, err := tpm2.Sign(rwc, primaryHandle, "")
 }

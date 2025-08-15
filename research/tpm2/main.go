@@ -1,105 +1,157 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"log"
+	"os"
 
-	keyfile "github.com/foxboron/go-tpm-keyfiles"
-	tpm2legacy "github.com/google/go-tpm/legacy/tpm2"
-	"github.com/google/go-tpm/tpm"
-	"github.com/google/go-tpm/tpm2"
-	"github.com/google/go-tpm/tpm2/transport"
-	"github.com/google/go-tpm/tpm2/transport/linuxtpm"
-	"github.com/google/go-tpm/tpm2/transport/simulator"
-	"github.com/spf13/pflag"
+	"github.com/google/go-tpm/legacy/tpm2"
 )
+
+const device = "/dev/tpm0"
 
 const (
-	tpm0Device   = "/dev/tpm0"
-	tpmrm0Device = "/dev/tpmrm0"
+	parentPassword = ""
+	ownerPassword  = ""
 )
-
-var (
-	tpmPath = pflag.String("tpm", tpm0Device, "")
-)
-
-func getDeviceTPM() transport.TPMCloser {
-	rwc, err := linuxtpm.Open(*tpmPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return rwc
-}
-
-func getSimulatorTPM() transport.TPMCloser {
-	tpm, err := simulator.OpenSimulator()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return tpm
-}
 
 func main() {
-	pflag.Parse()
-	// rwc, err := linuxtpm.Open(*tpmPath)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// rwc, err := tpm2legacy.OpenTPM(*tpmPath)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	if len(os.Args) < 2 {
+		fmt.Println("not enougth args")
+		os.Exit(0)
+	}
 
-	// listTPMKeys(rwc)
-}
-
-func loadKeyfile() {
-	tpm := getSimulatorTPM()
-
-	key, err := keyfile.NewLoadableKey(tpm, tpm2.TPMAlgECC, 256, []byte{}, keyfile.WithDescription("TPM Key"))
+	rwc, err := tpm2.OpenTPM(device)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%+v\n", key)
-	fmt.Println(string(key.Secret.Buffer))
-}
+	defer rwc.Close()
 
-func sealedData(tpm transport.TPMCloser) {
-	msg := []byte("message")
-	k, _ := keyfile.NewSealedData(tpm, msg, []byte(nil))
-	data, _ := keyfile.UnsealData(tpm, k, []byte(nil))
-	if bytes.Equal(data, msg) {
-		fmt.Println("same message")
+	switch os.Args[1] {
+	case "store":
+		if len(os.Args) < 3 {
+			fmt.Println("not enougth args")
+			os.Exit(0)
+		}
+		if err := storePassword(rwc, []byte(os.Args[2])); err != nil {
+			log.Fatal("Failed to store password:", err.Error())
+		}
+	case "load":
+		password, err := loadPassword(rwc)
+		if err != nil {
+			log.Fatal("Failed to load password:", err.Error())
+		}
+		fmt.Println(string(password))
+	default:
+		fmt.Println("unknown command")
+		os.Exit(0)
 	}
 }
 
-func getRandomData() {
+const (
+	keySize = 1024
+	// keySize = 2048
+)
 
+var tpmPublic = tpm2.Public{
+	Type: tpm2.AlgRSA,
+	// NameAlg: tpm2.AlgSHA256,
+	NameAlg: tpm2.AlgSHA1,
+	Attributes: tpm2.FlagFixedTPM | tpm2.FlagFixedParent | tpm2.FlagSensitiveDataOrigin |
+		tpm2.FlagUserWithAuth | tpm2.FlagRestricted | tpm2.FlagDecrypt,
+
+	RSAParameters: &tpm2.RSAParams{KeyBits: keySize},
 }
 
-// func createAndStoreKey(rwc io.ReadWriteCloser) (tpmutil.Handle, []byte, error) {
-// }
+func storePassword(rwc io.ReadWriteCloser, password []byte) error {
+	// tpmPublic := tpm2.Public{
+	// 	Type:    tpm2.AlgRSA,
+	// 	NameAlg: tpm2.AlgSHA256,
+	// 	Attributes: tpm2.FlagFixedTPM | tpm2.FlagFixedParent | tpm2.FlagSensitiveDataOrigin |
+	// 		tpm2.FlagUserWithAuth | tpm2.FlagRestricted | tpm2.FlagDecrypt,
+	// 	RSAParameters: &tpm2.RSAParams{KeyBits: 2048},
+	// }
 
-func listTPMKeys(rwc io.ReadWriteCloser) {
-	_ = tpm2legacy.ClockInfo{} // for storing import of tpm2legacy module
-
-	handles, err := tpm.GetKeys(rwc)
+	primaryHandle, _, err := tpm2.CreatePrimary(
+		rwc,
+		tpm2.HandleOwner,
+		tpm2.PCRSelection{},
+		parentPassword,
+		ownerPassword,
+		tpmPublic,
+	)
 	if err != nil {
-		log.Fatal("failed to get keys:", err)
+		return err
+	}
+	defer func() {
+		if err := tpm2.FlushContext(rwc, primaryHandle); err != nil {
+			log.Fatal("Failed to flush context:", err.Error())
+		}
+	}()
+
+	// pcrSelection := tpm2.PCRSelection{
+	// 	Hash: tpm2.AlgSHA256,
+	// 	PCRs: []int{0, 1, 2, 3, 4, 5, 6, 7},
+	// }
+
+	// if err := tpm2.PolicyPCR(rwc, primaryHandle, []byte{}, pcrSelection); err != nil {
+	// 	return fmt.Errorf("failed to set up policy pcr: %w", err)
+	// }
+
+	sealPrivate, sealPublic, err := tpm2.Seal(
+		rwc,
+		primaryHandle,
+		parentPassword,
+		ownerPassword,
+		[]byte{},
+		password,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to seal sensitive data: %w", err)
 	}
 
-	fmt.Printf("%d keys loaded in TPM\n", len(handles))
-	for i, handle := range handles {
-		fmt.Printf(" (%d) key handle %d\n", i+1, handle)
-	}
-}
+	os.WriteFile("seal.priv", sealPrivate, 0644)
+	os.WriteFile("seal.pub", sealPublic, 0644)
 
-type TpmDevice struct {
-	rwc io.ReadWriteCloser
-}
-
-func findPubKey(label string, tag string, hash []byte) error {
 	return nil
+}
+
+func loadPassword(rwc io.ReadWriteCloser) ([]byte, error) {
+	// tpmPublic := tpm2.Public{
+	// 	Type:    tpm2.AlgRSA,
+	// 	NameAlg: tpm2.AlgSHA256,
+	// 	Attributes: tpm2.FlagFixedTPM | tpm2.FlagFixedParent | tpm2.FlagSensitiveDataOrigin |
+	// 		tpm2.FlagUserWithAuth | tpm2.FlagRestricted | tpm2.FlagDecrypt,
+	// 	RSAParameters: &tpm2.RSAParams{KeyBits: 2048},
+	// }
+
+	primaryHandle, _, err := tpm2.CreatePrimary(
+		rwc,
+		tpm2.HandleOwner,
+		tpm2.PCRSelection{},
+		parentPassword,
+		ownerPassword,
+		tpmPublic,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err := tpm2.FlushContext(rwc, primaryHandle); err != nil {
+			log.Fatal("Failed to flush context:", err.Error())
+		}
+	}()
+
+	// sealPublic, err := os.ReadFile("seal.pub")
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	unsealed, err := tpm2.Unseal(rwc, primaryHandle, parentPassword)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unseal: %w", err)
+	}
+
+	return unsealed, nil
 }
