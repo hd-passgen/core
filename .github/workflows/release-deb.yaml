@@ -19,14 +19,15 @@ jobs:
         with:
           go-version: "1.24"
 
+      - name: Extract version from tag
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
       - name: Build hd-passgen
-        run: CGO_ENABLED=0 go build -o hd-passgen .
+        run: |
+          CGO_ENABLED=0 go build -ldflags "-s -w -X 'main.Version=${VERSION}'" -o hd-passgen .
 
       - name: Install nfpm
         run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.43.0
-
-      - name: Extract version from tag
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
       - name: Package .deb with nfpm
         run: |
